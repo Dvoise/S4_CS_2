@@ -26,6 +26,22 @@ resource "aws_autoscaling_group" "terraform_asg" {
   }
 }
 
+resource "aws_cloudwatch_metric_alarm" "asg_high_cpu_alert" {
+  alarm_name          = "asg-web-servers-high-cpu"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 2
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/EC2"
+  period              = 300
+  statistic           = "Average"
+  threshold           = 85
+  alarm_description   = "This alarm monitors the Auto Scaling Group CPU utilization"
+
+  dimensions = {
+    AutoScalingGroupName = aws_autoscaling_group.terraform_asg.name
+  }
+}
+
 resource "aws_autoscaling_policy" "scale_on_cpu" {
   name                    = "scale-on-cpu"
   autoscaling_group_name  = aws_autoscaling_group.terraform_asg.name
@@ -70,6 +86,11 @@ resource "aws_iam_role" "ec2_ssm_role" {
 resource "aws_iam_role_policy_attachment" "ssm_policy" {
   role       = aws_iam_role.ec2_ssm_role.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
+resource "aws_iam_role_policy_attachment" "cloudwatch_policy" {
+  role       = aws_iam_role.ec2_ssm_role.name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
 }
 
 resource "aws_iam_instance_profile" "ec2_profile" {
@@ -126,6 +147,22 @@ resource "aws_lb" "web_alb" {
   load_balancer_type = "application"
   security_groups    = [var.web_sg_id]
   subnets            = [var.public_subnet_blue_id, var.public_subnet_green_id]
+}
+
+resource "aws_cloudwatch_metric_alarm" "alb_unhealthy_hosts" {
+  alarm_name          = "alb-unhealthy-hosts-alert"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "UnHealthyHostCount"
+  namespace           = "AWS/ApplicationELB"
+  period              = 60
+  statistic           = "Maximum"
+  threshold           = 0
+
+  dimensions = {
+    TargetGroup  = aws_lb_target_group.web_tg.arn_suffix
+    LoadBalancer = aws_lb.web_alb.arn_suffix
+  }x  
 }
 
 resource "aws_lb_listener" "web_listener" {
