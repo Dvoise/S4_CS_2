@@ -92,3 +92,11 @@ resource "aws_vpc_security_group_ingress_rule" "web_node_exporter" {
   ip_protocol       = "tcp"
   to_port           = 9100
 }
+
+resource "aws_vpc_security_group_ingress_rule" "web_icmp_onprem" {
+  security_group_id = aws_security_group.web_sg.id
+  cidr_ipv4         = var.onprem_cidr
+  from_port         = -1
+  to_port           = -1
+  ip_protocol       = "icmp"
+}

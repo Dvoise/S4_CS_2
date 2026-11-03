@@ -29,6 +29,7 @@ module "my_security"{
     source = "./modules/security"
     vpc_id = module.my_network.vpc_id
     my_ip_cidr = "${chomp(data.http.my_ip.response_body)}/32"
+    onprem_cidr = var.onprem_cidr
 }
 
 module "my_compute" {
@@ -55,6 +56,20 @@ module "my_monitoring" {
   source = "./modules/monitoring"
   public_subnet_id = module.my_network.public_subnet_blue_id
   monitoring_sg_id = module.my_security.monitoring_sg_id
+}
+
+module "my_vpn" {
+  source           = "./modules/vpn"
+  vpc_id           = module.my_network.vpc_id
+  onprem_public_ip = var.onprem_public_ip
+  onprem_cidr      = var.onprem_cidr
+  vpn_psk          = var.vpn_psk
+  route_table_ids  = concat([module.my_network.public_route_table_id], module.my_network.private_route_table_ids)
+}
+
+module "my_soar" {
+  source      = "./modules/soar"
+  alert_email = var.alert_email
 }
 
 resource "aws_s3_bucket" "my_bucket" {

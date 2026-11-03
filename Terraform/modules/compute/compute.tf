@@ -162,7 +162,7 @@ resource "aws_cloudwatch_metric_alarm" "alb_unhealthy_hosts" {
   dimensions = {
     TargetGroup  = aws_lb_target_group.web_tg.arn_suffix
     LoadBalancer = aws_lb.web_alb.arn_suffix
-  }x  
+  }
 }
 
 resource "aws_lb_listener" "web_listener" {

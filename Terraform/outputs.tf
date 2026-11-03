@@ -17,3 +17,15 @@ output prometheus_url {
   value       = module.my_monitoring.prometheus_url
   description = "Public URL for Prometheus"
 }
+
+output "vpn_tunnel1_address" {
+  value = module.my_vpn.tunnel1_address 
+}
+
+output "vpn_tunnel2_address" {
+  value = module.my_vpn.tunnel2_address
+}
+
+variable "alert_email" {
+  type = string
+}

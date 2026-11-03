@@ -32,3 +32,13 @@ output "nat_gateway_green_id" {
   value       = aws_nat_gateway.nat_green.id
   description = "ID of the green NAT Gateway"
 }
+
+output "public_route_table_id" {
+  value       = aws_route_table.public_rt.id
+  description = "ID of the public route table"
+}
+
+output "private_route_table_ids" {
+  value       = [aws_route_table.private_blue_rt.id, aws_route_table.private_green_rt.id]
+  description = "IDs of the private route tables"
+}
