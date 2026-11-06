@@ -4,10 +4,7 @@ variable "private_subnet_blue_id" {
 variable "db_sg_id" {
   type = string
 }
-variable "db_instance_profile_name" {
-  type    = string
-  default = null
-}
+
 variable "db_name" {
   type    = string
   default = "appdb"
@@ -19,4 +16,9 @@ variable "db_username" {
 variable "db_password" {
   type      = string
   sensitive = true
-}   
+}
+
+variable "soar_db_password" { 
+  type = string 
+  sensitive = true 
+}

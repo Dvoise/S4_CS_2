@@ -130,6 +130,11 @@ resource "aws_launch_template" "terraform_lt" {
   systemctl enable --now prometheus-node-exporter
   echo "<h1>Innovatech</h1>" > /var/www/html/index.html
 
+  wget -q https://amazoncloudwatch-agent-eu-central-1.s3.eu-central-1.amazonaws.com/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
+  dpkg -i -E ./amazon-cloudwatch-agent.deb
+  echo '{"agent":{"run_as_user":"root"},"logs":{"logs_collected":{"files":{"collect_list":[{"file_path":"/var/log/auth.log","log_group_name":"/soar/auth","log_stream_name":"{instance_id}"},{"file_path":"/var/log/syslog","log_group_name":"/soar/syslog","log_stream_name":"{instance_id}"}]}}}}' > /opt/aws/amazon-cloudwatch-agent/etc/config.json
+  /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -c file:/opt/aws/amazon-cloudwatch-agent/etc/config.json -s
+
   cd /home/ubuntu
   wget https://aws-codedeploy-eu-central-1.s3.eu-central-1.amazonaws.com/latest/install
   chmod +x ./install
@@ -189,4 +194,9 @@ resource "aws_lb_target_group" "web_tg" {
     healthy_threshold   = 2
     unhealthy_threshold = 2
   }
+}
+
+resource "aws_iam_role_policy_attachment" "web_cw_agent" {
+  role       = aws_iam_role.ec2_ssm_role.name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
 }

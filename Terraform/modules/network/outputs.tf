@@ -42,3 +42,7 @@ output "private_route_table_ids" {
   value       = [aws_route_table.private_blue_rt.id, aws_route_table.private_green_rt.id]
   description = "IDs of the private route tables"
 }
+
+output "default_nacl_id" {
+  value = aws_vpc.main.default_network_acl_id
+}

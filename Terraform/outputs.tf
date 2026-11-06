@@ -29,3 +29,7 @@ output "vpn_tunnel2_address" {
 variable "alert_email" {
   type = string
 }
+
+output "collector_private_ip" {
+  value = module.my_collector.private_ip
+}

@@ -45,10 +45,10 @@ module "my_compute" {
 
 module "my_database" {
   source = "./modules/database"
-
   private_subnet_blue_id  = module.my_network.private_subnet_blue_id
   db_sg_id                 = module.my_security.db_sg_id
   db_password              = var.db_password
+  soar_db_password         = var.soar_db_password
   depends_on = [module.my_network]
 }
 
@@ -68,8 +68,22 @@ module "my_vpn" {
 }
 
 module "my_soar" {
-  source      = "./modules/soar"
-  alert_email = var.alert_email
+  source             = "./modules/soar"
+  alert_email        = var.alert_email
+  private_subnet_ids = [module.my_network.private_subnet_blue_id, module.my_network.private_subnet_green_id]
+  lambda_sg_id       = module.my_security.lambda_sg_id
+  nacl_id         = module.my_network.default_nacl_id
+  isolation_sg_id = module.my_security.isolation_sg_id
+  allowlist_ips   = [var.onprem_public_ip]
+  db_host            = module.my_database.db_private_ip
+  db_password        = var.soar_db_password
+}
+
+module "my_collector" {
+  source     = "./modules/collector"
+  subnet_id  = module.my_network.private_subnet_blue_id
+  sg_id      = module.my_security.collector_sg_id
+  depends_on = [module.my_network]
 }
 
 resource "aws_s3_bucket" "my_bucket" {

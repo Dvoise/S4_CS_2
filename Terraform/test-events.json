@@ -1,0 +1,1 @@
+[{"Source":"soar.cloudwatch","DetailType":"Security Alert","Detail":"{\"event_type\":\"instance_compromised\",\"severity\":\"9\",\"source_ip\":null,\"instance_id\":\"i-0e45c8f64e450771c\",\"origin\":\"aws\",\"message\":\"manual test\"}"}]

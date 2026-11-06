@@ -16,3 +16,8 @@ variable "vpn_psk" {
   type      = string
   sensitive = true
 }
+
+variable "soar_db_password" { 
+  type = string 
+  sensitive = true 
+}

@@ -15,3 +15,18 @@ output "monitoring_sg_id" {
   value = aws_security_group.monitoring_sg.id
 
 }
+
+output "lambda_sg_id" {
+  value = aws_security_group.lambda_sg.id
+  
+}
+
+output "collector_sg_id" {
+  value = aws_security_group.collector_sg.id
+
+}
+
+output "isolation_sg_id" {
+  value = aws_security_group.isolation_sg.id
+  
+}
